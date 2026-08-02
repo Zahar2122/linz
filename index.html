@@ -8,7 +8,6 @@
     <style>
         :root {
             --primary: #7c5cfc;
-            --primary-dark: #6246ea;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
@@ -17,33 +16,24 @@
             --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', -apple-system, sans-serif;
             min-height: 100vh;
             color: #1e293b;
             -webkit-font-smoothing: antialiased;
-            position: relative;
             overflow-x: hidden;
         }
 
-        /* Фоновые волны */
         .bg-waves {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             z-index: -2;
             background: linear-gradient(180deg, #e8e0ff 0%, #f0e6ff 20%, #e0f0ff 50%, #e8ffe8 80%, #fff8e0 100%);
         }
 
-        /* Плавающие круги */
         .bg-circle {
             position: fixed;
             border-radius: 50%;
@@ -53,72 +43,27 @@
             animation: float 20s ease-in-out infinite;
         }
 
-        .bg-circle-1 {
-            width: 400px;
-            height: 400px;
-            background: #c4b5fd;
-            top: -100px;
-            right: -100px;
-            animation-delay: 0s;
+        .bg-circle-1 { width: 400px; height: 400px; background: #c4b5fd; top: -100px; right: -100px; }
+        .bg-circle-2 { width: 350px; height: 350px; background: #a5d8ff; bottom: -80px; left: -80px; animation-delay: -7s; }
+        .bg-circle-3 { width: 250px; height: 250px; background: #a7f0ba; top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: -14s; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -30px) scale(1.05); }
+            50% { transform: translate(-20px, 20px) scale(0.95); }
+            75% { transform: translate(-30px, -20px) scale(1.02); }
         }
 
-        .bg-circle-2 {
-            width: 350px;
-            height: 350px;
-            background: #a5d8ff;
-            bottom: -80px;
-            left: -80px;
-            animation-delay: -7s;
-        }
-
-        .bg-circle-3 {
-            width: 250px;
-            height: 250px;
-            background: #a7f0ba;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation-delay: -14s;
-        }
-
-        .bg-circle-4 {
-            width: 200px;
-            height: 200px;
-            background: #fde68a;
-            top: 20%;
-            right: 20%;
-            animation-delay: -3s;
-        }
-
-        /* Сетка точек */
         .bg-dots {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             z-index: -1;
-            opacity: 0.15;
+            opacity: 0.12;
             background-image: radial-gradient(circle, #7c5cfc 1px, transparent 1px);
             background-size: 40px 40px;
         }
 
-        @keyframes float {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-            }
-            25% {
-                transform: translate(30px, -30px) scale(1.05);
-            }
-            50% {
-                transform: translate(-20px, 20px) scale(0.95);
-            }
-            75% {
-                transform: translate(-30px, -20px) scale(1.02);
-            }
-        }
-
-        /* Контейнер */
         .container {
             max-width: 480px;
             margin: 0 auto;
@@ -127,50 +72,22 @@
             z-index: 1;
         }
 
-        /* Шапка с иконкой */
         .header {
             text-align: center;
             margin-bottom: 24px;
             padding-top: 10px;
         }
 
-        .logo-wrapper {
-            display: inline-block;
-            position: relative;
-            margin-bottom: 12px;
-        }
-
         .logo-circle {
-            width: 80px;
-            height: 80px;
+            width: 80px; height: 80px;
             background: linear-gradient(135deg, #7c5cfc 0%, #a78bfa 50%, #c4b5fd 100%);
             border-radius: 24px;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             font-size: 40px;
             box-shadow: 0 16px 40px rgba(124, 92, 252, 0.35);
-            position: relative;
-            animation: logoPulse 4s ease-in-out infinite;
-        }
-
-        .logo-ring {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            border-radius: 28px;
-            border: 2px dashed rgba(124, 92, 252, 0.3);
-            animation: ringRotate 20s linear infinite;
-        }
-
-        @keyframes logoPulse {
-            0%, 100% { box-shadow: 0 16px 40px rgba(124, 92, 252, 0.35); }
-            50% { box-shadow: 0 20px 50px rgba(124, 92, 252, 0.5); }
-        }
-
-        @keyframes ringRotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            margin-bottom: 12px;
         }
 
         .header h1 {
@@ -180,7 +97,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            letter-spacing: -0.5px;
         }
 
         .header .subtitle {
@@ -189,7 +105,56 @@
             margin-top: 4px;
         }
 
-        /* Стеклянная карточка */
+        /* Подписка на уведомления */
+        .subscribe-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--glass-shadow);
+            text-align: center;
+        }
+
+        .subscribe-card.subscribed {
+            border-color: rgba(16, 185, 129, 0.4);
+            background: rgba(240, 253, 244, 0.8);
+        }
+
+        .telegram-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #0088cc;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
+        }
+
+        .telegram-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 136, 204, 0.4);
+        }
+
+        .subscribe-status {
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-active { color: #059669; }
+        .status-inactive { color: #9ca3af; }
+
         .glass-card {
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
@@ -199,12 +164,6 @@
             padding: 24px;
             margin-bottom: 16px;
             box-shadow: var(--glass-shadow);
-            transition: all 0.3s ease;
-        }
-
-        .glass-card:hover {
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-            transform: translateY(-2px);
         }
 
         .card-title {
@@ -216,24 +175,7 @@
             gap: 10px;
         }
 
-        .card-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-
-        .card-icon.add {
-            background: linear-gradient(135deg, #ede9fe, #ddd6fe);
-        }
-
-        /* Поля ввода */
-        .input-group {
-            margin-bottom: 16px;
-        }
+        .input-group { margin-bottom: 16px; }
 
         .input-label {
             display: block;
@@ -281,7 +223,6 @@
             background: #fff;
         }
 
-        /* Кнопка с градиентом */
         .btn-primary {
             width: 100%;
             padding: 16px;
@@ -292,27 +233,9 @@
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
             font-family: 'Inter', sans-serif;
-            letter-spacing: 0.3px;
             box-shadow: 0 8px 25px rgba(124, 92, 252, 0.35);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn-primary:hover::after {
-            left: 100%;
+            transition: all 0.3s;
         }
 
         .btn-primary:hover {
@@ -322,10 +245,8 @@
 
         .btn-primary:active {
             transform: translateY(0);
-            box-shadow: 0 4px 15px rgba(124, 92, 252, 0.3);
         }
 
-        /* Карточка линзы */
         .lens-card {
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
@@ -335,38 +256,12 @@
             padding: 18px 20px;
             margin-bottom: 12px;
             box-shadow: var(--glass-shadow);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
             animation: cardIn 0.5s ease;
         }
 
         @keyframes cardIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .lens-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            opacity: 0.04;
-            pointer-events: none;
-        }
-
-        .lens-card.ok::before {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%2310b981'/%3E%3C/svg%3E");
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .lens-card.warning {
@@ -406,9 +301,7 @@
             gap: 8px;
         }
 
-        .lens-emoji {
-            font-size: 28px;
-        }
+        .lens-emoji { font-size: 28px; }
 
         .badge {
             display: inline-flex;
@@ -418,37 +311,13 @@
             border-radius: 20px;
             font-size: 12px;
             font-weight: 700;
-            letter-spacing: 0.3px;
         }
 
-        .badge-ok {
-            background: #d1fae5;
-            color: #065f46;
-        }
+        .badge-ok { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-expired { background: #fee2e2; color: #991b1b; }
 
-        .badge-warning {
-            background: #fef3c7;
-            color: #92400e;
-            animation: badgePulse 1.5s ease-in-out infinite;
-        }
-
-        .badge-expired {
-            background: #fee2e2;
-            color: #991b1b;
-            animation: badgePulse 1s ease-in-out infinite;
-        }
-
-        @keyframes badgePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .lens-dates {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: 12px;
-        }
+        .lens-dates { margin-bottom: 12px; }
 
         .date-row {
             display: flex;
@@ -456,11 +325,11 @@
             gap: 10px;
             font-size: 14px;
             color: #4b5563;
+            margin-bottom: 4px;
         }
 
         .date-dot {
-            width: 8px;
-            height: 8px;
+            width: 8px; height: 8px;
             border-radius: 50%;
             flex-shrink: 0;
         }
@@ -468,10 +337,7 @@
         .dot-start { background: #a78bfa; }
         .dot-end { background: #f59e0b; }
 
-        /* Прогресс бар */
-        .progress-wrap {
-            margin-bottom: 12px;
-        }
+        .progress-wrap { margin-bottom: 12px; }
 
         .progress-bar {
             height: 6px;
@@ -484,19 +350,6 @@
             height: 100%;
             border-radius: 10px;
             transition: width 0.8s ease;
-            position: relative;
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 8px;
-            height: 100%;
-            background: white;
-            border-radius: 50%;
-            opacity: 0.5;
         }
 
         .progress-ok { background: linear-gradient(90deg, #34d399, #10b981); }
@@ -519,9 +372,9 @@
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
             font-family: 'Inter', sans-serif;
             width: 100%;
+            transition: all 0.2s;
         }
 
         .btn-delete:hover {
@@ -530,7 +383,6 @@
             color: #dc2626;
         }
 
-        /* Пустое состояние */
         .empty-state {
             text-align: center;
             padding: 40px 30px;
@@ -559,10 +411,7 @@
             margin-bottom: 6px;
         }
 
-        .empty-sub {
-            font-size: 14px;
-            color: #9ca3af;
-        }
+        .empty-sub { font-size: 14px; color: #9ca3af; }
 
         .section-label {
             font-size: 13px;
@@ -581,49 +430,65 @@
             color: #9ca3af;
         }
 
-        .footer-dot {
-            display: inline-block;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: #7c5cfc;
-            margin: 0 6px;
-            animation: dotBlink 1.5s ease-in-out infinite;
+        .input-chat {
+            display: none;
+            margin-top: 10px;
         }
 
-        @keyframes dotBlink {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
+        .input-chat.show {
+            display: block;
+        }
+
+        .input-chat input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid rgba(0,0,0,0.06);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <!-- Фоновые элементы -->
     <div class="bg-waves"></div>
     <div class="bg-dots"></div>
     <div class="bg-circle bg-circle-1"></div>
     <div class="bg-circle bg-circle-2"></div>
     <div class="bg-circle bg-circle-3"></div>
-    <div class="bg-circle bg-circle-4"></div>
 
     <div class="container">
-        <!-- Шапка -->
         <div class="header">
-            <div class="logo-wrapper">
-                <div class="logo-ring"></div>
-                <div class="logo-circle">👁️</div>
-            </div>
+            <div class="logo-circle">👁️</div>
             <h1>LensCare</h1>
             <p class="subtitle">Заботься о зрении красиво</p>
         </div>
 
-        <!-- Форма -->
-        <div class="glass-card">
-            <div class="card-title">
-                <div class="card-icon add">➕</div>
-                Новые линзы
+        <!-- Блок подписки на Telegram -->
+        <div class="subscribe-card" id="subscribeBlock">
+            <p style="font-weight:600; margin-bottom:12px;">🔔 Уведомления в Telegram</p>
+            <a class="telegram-btn" href="https://t.me/ZakharAntonovich_bot" target="_blank" id="telegramLink">
+                🤖 Подписаться на бота
+            </a>
+            <p style="font-size:12px; color:#6b7280; margin-top:8px;">
+                1. Нажми кнопку → откроется бот<br>
+                2. Нажми <b>START</b> в боте<br>
+                3. Скопируй свой код и вставь ниже
+            </p>
+            <div class="input-chat" id="chatInputBlock">
+                <input type="text" id="chatIdInput" placeholder="Вставь сюда свой chat_id">
+                <button class="btn-primary" onclick="saveChatId()" style="margin-top:8px; font-size:14px; padding:12px;">
+                    💾 Сохранить
+                </button>
             </div>
-            
+            <div class="subscribe-status status-inactive" id="subscribeStatus">
+                ⚪ Не подключено
+            </div>
+        </div>
+
+        <!-- Форма добавления -->
+        <div class="glass-card">
+            <div class="card-title">➕ Новые линзы</div>
             <div class="input-group">
                 <label class="input-label">Тип линз</label>
                 <select id="lensType">
@@ -633,34 +498,71 @@
                     <option value="quarterly">📆 Квартальные (90 дней)</option>
                 </select>
             </div>
-            
             <div class="input-group">
                 <label class="input-label">Дата начала</label>
                 <input type="date" id="startDate">
             </div>
-            
-            <button class="btn-primary" onclick="addLens()">
-                ✨ Добавить линзы
-            </button>
+            <button class="btn-primary" onclick="addLens()">✨ Добавить линзы</button>
         </div>
 
-        <!-- Список -->
         <div class="section-label">📋 Мои линзы</div>
         <div id="lensesList"></div>
-
-        <div class="footer">
-            <span class="footer-dot"></span>
-            Напоминания придут в Telegram
-            <span class="footer-dot" style="animation-delay: 0.5s;"></span>
-        </div>
+        <div class="footer">LensCare — уведомления в Telegram</div>
     </div>
 
     <script>
+        // Токен ОБЩЕГО бота
         const BOT_TOKEN = '8613787067:AAE1O_Md-6DxyVPp4DR7o-JrnrJiU9EigJY';
-        const CHAT_ID = '1796046052';
         
         let lenses = JSON.parse(localStorage.getItem('lenses')) || [];
+        let userChatId = localStorage.getItem('telegram_chat_id') || '';
+        
         document.getElementById('startDate').value = new Date().toISOString().split('T')[0];
+        
+        // Показываем статус подписки
+        function updateSubscribeUI() {
+            const block = document.getElementById('subscribeBlock');
+            const status = document.getElementById('subscribeStatus');
+            const chatInput = document.getElementById('chatInputBlock');
+            
+            if (userChatId) {
+                block.classList.add('subscribed');
+                status.textContent = '🟢 Подключено! Уведомления будут приходить';
+                status.className = 'subscribe-status status-active';
+                chatInput.classList.remove('show');
+            } else {
+                block.classList.remove('subscribed');
+                status.textContent = '⚪ Не подключено — нажми кнопку выше';
+                status.className = 'subscribe-status status-inactive';
+                chatInput.classList.add('show');
+            }
+        }
+        
+        // Показываем поле ввода chat_id
+        document.getElementById('telegramLink').addEventListener('click', function(e) {
+            document.getElementById('chatInputBlock').classList.add('show');
+        });
+        
+        // Сохраняем chat_id
+        function saveChatId() {
+            const input = document.getElementById('chatIdInput').value.trim();
+            if (input) {
+                userChatId = input;
+                localStorage.setItem('telegram_chat_id', userChatId);
+                updateSubscribeUI();
+                // Отправляем тестовое сообщение
+                sendTelegramMessage(userChatId, '✅ <b>Подписка активирована!</b>\n\nТеперь ты будешь получать напоминания о замене линз.\n\n———\n<i>LensCare</i>');
+                alert('✅ Готово! Проверь Telegram — должно прийти подтверждение.');
+            }
+        }
+        
+        function sendTelegramMessage(chatId, text) {
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ chat_id: chatId, text: text, parse_mode: 'HTML' })
+            }).catch(() => {});
+        }
         
         const lensConfig = {
             daily:     { name: 'Однодневные',  emoji: '👆', days: 1 },
@@ -672,7 +574,6 @@
         function addLens() {
             const type = document.getElementById('lensType').value;
             const startDate = document.getElementById('startDate').value;
-            
             if (!startDate) return;
             
             const config = lensConfig[type];
@@ -694,11 +595,10 @@
             renderLenses();
             
             const btn = document.querySelector('.btn-primary');
-            const orig = btn.textContent;
             btn.textContent = '✅ Добавлено!';
             btn.style.background = 'linear-gradient(135deg, #10b981, #34d399)';
             setTimeout(() => {
-                btn.textContent = orig;
+                btn.textContent = '✨ Добавить линзы';
                 btn.style.background = '';
             }, 1500);
         }
@@ -716,6 +616,8 @@
         }
         
         function scheduleNotifications(lens) {
+            if (!userChatId) return;
+            
             const endDate = new Date(lens.endDate);
             const now = new Date();
             
@@ -727,13 +629,9 @@
                 const delay = notifyDate - now;
                 
                 if (delay > 0 && delay < 90 * 24 * 60 * 60 * 1000) {
-                    setTimeout(async () => {
+                    setTimeout(() => {
                         const msg = `👁 <b>Пора менять линзы!</b>\n\n${lens.emoji} <b>${lens.typeName}</b>\n📅 Замена: <b>${formatRu(lens.endDate)}</b>\n⏰ Осталось: <b>${daysBefore} дн.</b>\n\n———\n<i>LensCare</i>`;
-                        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'HTML' })
-                        });
+                        sendTelegramMessage(userChatId, msg);
                     }, delay);
                 }
             });
@@ -748,9 +646,9 @@
             const daysUsed = Math.max(0, Math.ceil((today - start) / 86400000));
             const progress = Math.min(100, Math.round((daysUsed / lens.totalDays) * 100));
             
-            if (daysLeft < 0) return { status: 'expired', badgeClass: 'badge-expired', badgeText: '⚠️ Просрочены', progressClass: 'progress-expired', daysLeft };
-            if (daysLeft <= 3) return { status: 'warning', badgeClass: 'badge-warning', badgeText: `⚡ ${daysLeft} дн.`, progressClass: 'progress-warning', daysLeft };
-            return { status: 'ok', badgeClass: 'badge-ok', badgeText: `✅ ${daysLeft} дн.`, progressClass: 'progress-ok', daysLeft, progress };
+            if (daysLeft < 0) return { status: 'expired', badgeClass: 'badge-expired', badgeText: '⚠️ Просрочены', progressClass: 'progress-expired', progress: 100 };
+            if (daysLeft <= 3) return { status: 'warning', badgeClass: 'badge-warning', badgeText: `⚡ ${daysLeft} дн.`, progressClass: 'progress-warning', progress };
+            return { status: 'ok', badgeClass: 'badge-ok', badgeText: `✅ ${daysLeft} дн.`, progressClass: 'progress-ok', progress };
         }
         
         function renderLenses() {
@@ -779,18 +677,14 @@
                         <span class="badge ${s.badgeClass}">${s.badgeText}</span>
                     </div>
                     <div class="lens-dates">
-                        <div class="date-row">
-                            <div class="date-dot dot-start"></div> Начало: ${formatRu(lens.startDate)}
-                        </div>
-                        <div class="date-row">
-                            <div class="date-dot dot-end"></div> Замена: ${formatRu(lens.endDate)}
-                        </div>
+                        <div class="date-row"><div class="date-dot dot-start"></div> Начало: ${formatRu(lens.startDate)}</div>
+                        <div class="date-row"><div class="date-dot dot-end"></div> Замена: ${formatRu(lens.endDate)}</div>
                     </div>
                     <div class="progress-wrap">
                         <div class="progress-bar">
-                            <div class="progress-fill ${s.progressClass}" style="width:${s.progress || 100}%"></div>
+                            <div class="progress-fill ${s.progressClass}" style="width:${s.progress}%"></div>
                         </div>
-                        <div class="progress-label">${s.progress || 100}% использовано</div>
+                        <div class="progress-label">${s.progress}% использовано</div>
                     </div>
                     <button class="btn-delete" onclick="deleteLens(${lens.id})">🗑 Удалить</button>
                 </div>`;
@@ -803,6 +697,8 @@
             return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
         }
         
+        // Инициализация
+        updateSubscribeUI();
         lenses.forEach(l => scheduleNotifications(l));
         renderLenses();
     </script>
