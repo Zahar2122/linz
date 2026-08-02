@@ -167,6 +167,21 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        .code-box {
+            background: #f0f0ff;
+            border: 2px dashed #7c5cfc;
+            border-radius: 12px;
+            padding: 12px;
+            margin: 12px 0;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 6px;
+            color: #5b21b6;
+            display: none;
+        }
+
+        .code-box.show { display: block; }
+
         .glass-card {
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
@@ -433,16 +448,18 @@
         <div class="subscribe-card" id="subscribeCard">
             <p style="font-weight:700; font-size:16px; margin-bottom:12px;">🔔 Уведомления в Telegram</p>
             
-            <a class="telegram-btn" id="telegramBtn" 
-               href="https://t.me/lens_calendar_test_bot?start=subscribe" 
-               target="_blank">
+            <button class="telegram-btn" id="telegramBtn" onclick="startSubscription()">
                 🤖 Подписаться на бота
-            </a>
+            </button>
+            
+            <div class="code-box" id="codeBox">
+                Твой код: <span id="verifyCode"></span>
+            </div>
             
             <p style="font-size:12px; color:#6b7280; margin-top:10px;" id="subscribeHint">
-                1. Нажми кнопку → откроется бот<br>
-                2. Нажми <b>START</b> в боте<br>
-                3. Возвращайся сюда — подключится само!
+                1. Нажми кнопку выше<br>
+                2. Отправь полученный код боту<br>
+                3. Готово!
             </p>
             
             <div class="subscribe-status" id="subscribeStatus">
@@ -486,22 +503,32 @@
         
         let lenses = JSON.parse(localStorage.getItem('lenses')) || [];
         let userChatId = localStorage.getItem('tg_chat_id') || '';
+        let verifyCode = localStorage.getItem('verify_code') || '';
         let isChecking = false;
         let checkTimeout = null;
         
         document.getElementById('startDate').value = new Date().toISOString().split('T')[0];
         
-        // Уникальный ID пользователя
-        if (!localStorage.getItem('user_uid')) {
-            localStorage.setItem('user_uid', 'usr_' + Math.random().toString(36).substr(2, 9));
+        // Генерируем код если нет
+        if (!verifyCode) {
+            verifyCode = Math.random().toString(36).substr(2, 6).toUpperCase();
+            localStorage.setItem('verify_code', verifyCode);
         }
-        const USER_UID = localStorage.getItem('user_uid');
         
-        function updateBotLink() {
-            const telegramBtn = document.getElementById('telegramBtn');
-            telegramBtn.href = `https://t.me/${BOT_USERNAME}?start=${USER_UID}`;
+        function startSubscription() {
+            document.getElementById('codeBox').classList.add('show');
+            document.getElementById('verifyCode').textContent = verifyCode;
+            document.getElementById('subscribeHint').innerHTML = 
+                '1. Открой бота: <a href="https://t.me/' + BOT_USERNAME + '" target="_blank" style="color:#0088cc;">@' + BOT_USERNAME + '</a><br>' +
+                '2. Отправь ему код: <b>' + verifyCode + '</b><br>' +
+                '3. Возвращайся — подключится само!';
+            updateSubscribeUI('waiting');
+            
+            if (!userChatId && !isChecking) {
+                isChecking = true;
+                checkSubscription();
+            }
         }
-        updateBotLink();
         
         // ============ ОТПРАВКА В TELEGRAM ============
         async function sendToTelegram(chatId, text) {
@@ -536,7 +563,7 @@
             const status = document.getElementById('subscribeStatus');
             const btn = document.getElementById('telegramBtn');
             const testBtn = document.getElementById('testNotifyBtn');
-            const hint = document.getElementById('subscribeHint');
+            const codeBox = document.getElementById('codeBox');
             
             card.classList.remove('active', 'blocked');
             btn.classList.remove('connected', 'reconnect');
@@ -546,55 +573,55 @@
                 status.innerHTML = '<span class="status-active">🟢 Подключено! Уведомления приходят</span>';
                 btn.classList.add('connected');
                 btn.textContent = '✅ Подключено';
+                btn.onclick = null;
                 testBtn.style.display = 'block';
-                hint.innerHTML = 'Всё работает! Проверь уведомления кнопкой ниже 👇';
+                codeBox.classList.remove('show');
             } else if (state === 'blocked') {
                 card.classList.add('blocked');
-                status.innerHTML = '<span class="status-blocked">🔴 Бот заблокирован. Нажми кнопку чтобы переподключить</span>';
+                status.innerHTML = '<span class="status-blocked">🔴 Бот заблокирован. Нажми чтобы переподключить</span>';
                 btn.classList.add('reconnect');
                 btn.textContent = '🔄 Переподключить бота';
+                btn.onclick = startSubscription;
                 testBtn.style.display = 'none';
-                hint.innerHTML = 'Нажми кнопку, затем <b>START</b> в боте чтобы снова подключиться';
+                codeBox.classList.remove('show');
             } else if (state === 'waiting') {
-                status.innerHTML = '<span class="status-waiting"><span class="spinner"></span> Ожидание... Нажми START в боте</span>';
+                status.innerHTML = '<span class="status-waiting"><span class="spinner"></span> Жду твой код в боте...</span>';
                 btn.textContent = '🤖 Подписаться на бота';
+                btn.onclick = startSubscription;
                 testBtn.style.display = 'none';
             } else {
                 status.innerHTML = '<span class="status-inactive">⚪ Не подключено</span>';
                 btn.textContent = '🤖 Подписаться на бота';
+                btn.onclick = startSubscription;
                 testBtn.style.display = 'none';
-                hint.innerHTML = '1. Нажми кнопку → откроется бот<br>2. Нажми <b>START</b> в боте<br>3. Возвращайся сюда — подключится само!';
             }
-            
-            updateBotLink();
         }
         
         // ============ ПРОВЕРКА ПОДПИСКИ ============
         async function checkSubscription() {
             if (userChatId) {
                 updateSubscribeUI('connected');
+                isChecking = false;
                 return;
             }
             
-            isChecking = true;
-            updateSubscribeUI('waiting');
-            
             try {
-                const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=-20&timeout=5`);
+                const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=-30&timeout=5`);
                 const data = await response.json();
                 
                 if (data.ok && data.result) {
                     for (let update of data.result) {
                         if (update.message && update.message.text) {
-                            const text = update.message.text;
+                            const text = update.message.text.trim().toUpperCase();
                             const chatId = update.message.chat.id.toString();
                             
-                            if (text.includes(USER_UID) || text.includes('/start')) {
+                            // Ищем ТОЧНО наш код
+                            if (text === verifyCode) {
                                 userChatId = chatId;
                                 localStorage.setItem('tg_chat_id', userChatId);
                                 
                                 await sendToTelegram(userChatId, 
-                                    '✅ <b>Подписка активирована!</b>\n\n' +
+                                    '✅ <b>Код принят!</b>\n\n' +
                                     'Теперь ты будешь получать напоминания:\n' +
                                     '📅 За 1 день до замены\n' +
                                     '☀️ В день замены (утром)\n\n' +
@@ -690,7 +717,7 @@
             scheduleNotifications(lens);
             renderLenses();
             
-            // ОТПРАВЛЯЕМ УВЕДОМЛЕНИЕ СРАЗУ ПРИ ДОБАВЛЕНИИ
+            // Уведомление при добавлении
             if (userChatId) {
                 const today = new Date();
                 const end = new Date(lens.endDate);
@@ -701,9 +728,7 @@
                            `📅 Начало: <b>${formatRu(lens.startDate)}</b>\n` +
                            `🔄 Замена: <b>${formatRu(lens.endDate)}</b>\n` +
                            `⏳ Осталось дней: <b>${daysLeft}</b>\n\n` +
-                           `Я напомню:\n` +
-                           `📅 За 1 день до замены\n` +
-                           `☀️ В день замены (утром)\n\n` +
+                           `Я напомню за 1 день и в день замены!\n\n` +
                            `———\n<i>LensCare</i>`;
                 
                 sendToTelegram(userChatId, msg);
@@ -719,7 +744,7 @@
             
             if (!userChatId) {
                 setTimeout(() => {
-                    alert('⚠️ Подключи Telegram бота чтобы получать уведомления о замене!');
+                    alert('⚠️ Подключи Telegram бота чтобы получать уведомления!');
                 }, 1800);
             }
         }
@@ -742,7 +767,7 @@
             const endDate = new Date(lens.endDate);
             const now = new Date();
             
-            // 1. Уведомление ЗА 1 ДЕНЬ до замены (в 10:00)
+            // Уведомление ЗА 1 ДЕНЬ (в 10:00)
             const dayBefore = new Date(endDate);
             dayBefore.setDate(dayBefore.getDate() - 1);
             dayBefore.setHours(10, 0, 0, 0);
@@ -768,7 +793,7 @@
                 }
             }
             
-            // 2. Уведомление В ДЕНЬ ЗАМЕНЫ (в 8:00 утра)
+            // Уведомление В ДЕНЬ ЗАМЕНЫ (в 8:00)
             const onDay = new Date(endDate);
             onDay.setHours(8, 0, 0, 0);
             
@@ -855,12 +880,13 @@
         
         // ============ ЗАПУСК ============
         function init() {
+            document.getElementById('verifyCode').textContent = verifyCode;
+            
             if (userChatId) {
                 updateSubscribeUI('connected');
                 lenses.forEach(l => scheduleNotifications(l));
             } else {
                 updateSubscribeUI('inactive');
-                setTimeout(checkSubscription, 1000);
             }
             renderLenses();
         }
@@ -868,6 +894,7 @@
         init();
         
         console.log('👁️ LensCare готов!');
+        console.log('Код для привязки:', verifyCode);
     </script>
 </body>
 </html>
