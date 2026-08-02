@@ -503,7 +503,7 @@
         }
         updateBotLink();
         
-        // ============ ОТПРАВКА В TELEGRAM (без лишних проверок) ============
+        // ============ ОТПРАВКА В TELEGRAM ============
         async function sendToTelegram(chatId, text) {
             try {
                 const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -517,7 +517,6 @@
                 });
                 const data = await response.json();
                 
-                // Если бот заблокирован — сбрасываем
                 if (!data.ok && data.error_code === 403) {
                     userChatId = '';
                     localStorage.removeItem('tg_chat_id');
@@ -570,7 +569,7 @@
             updateBotLink();
         }
         
-        // ============ ПРОВЕРКА ПОДПИСКИ (только при первом подключении) ============
+        // ============ ПРОВЕРКА ПОДПИСКИ ============
         async function checkSubscription() {
             if (userChatId) {
                 updateSubscribeUI('connected');
@@ -594,7 +593,6 @@
                                 userChatId = chatId;
                                 localStorage.setItem('tg_chat_id', userChatId);
                                 
-                                // ОДНО подтверждение при подключении
                                 await sendToTelegram(userChatId, 
                                     '✅ <b>Подписка активирована!</b>\n\n' +
                                     'Теперь ты будешь получать напоминания:\n' +
@@ -691,6 +689,25 @@
             saveLenses();
             scheduleNotifications(lens);
             renderLenses();
+            
+            // ОТПРАВЛЯЕМ УВЕДОМЛЕНИЕ СРАЗУ ПРИ ДОБАВЛЕНИИ
+            if (userChatId) {
+                const today = new Date();
+                const end = new Date(lens.endDate);
+                const daysLeft = Math.ceil((end - today) / (1000 * 60 * 60 * 24));
+                
+                const msg = `✅ <b>Линзы добавлены!</b>\n\n` +
+                           `${lens.emoji} <b>${lens.typeName}</b>\n` +
+                           `📅 Начало: <b>${formatRu(lens.startDate)}</b>\n` +
+                           `🔄 Замена: <b>${formatRu(lens.endDate)}</b>\n` +
+                           `⏳ Осталось дней: <b>${daysLeft}</b>\n\n` +
+                           `Я напомню:\n` +
+                           `📅 За 1 день до замены\n` +
+                           `☀️ В день замены (утром)\n\n` +
+                           `———\n<i>LensCare</i>`;
+                
+                sendToTelegram(userChatId, msg);
+            }
             
             const btn = document.querySelector('.btn-primary');
             btn.textContent = '✅ Добавлено!';
