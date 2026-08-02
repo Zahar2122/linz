@@ -27,19 +27,15 @@
         }
 
         .bg-waves {
-            position: fixed;
-            top: 0; left: 0;
+            position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: -2;
             background: linear-gradient(180deg, #e8e0ff 0%, #f0e6ff 20%, #e0f0ff 50%, #e8ffe8 80%, #fff8e0 100%);
         }
 
         .bg-circle {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.5;
-            z-index: -1;
+            position: fixed; border-radius: 50%;
+            filter: blur(80px); opacity: 0.5; z-index: -1;
             animation: float 20s ease-in-out infinite;
         }
 
@@ -55,27 +51,21 @@
         }
 
         .bg-dots {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: -1;
-            opacity: 0.12;
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; z-index: -1; opacity: 0.12;
             background-image: radial-gradient(circle, #7c5cfc 1px, transparent 1px);
             background-size: 40px 40px;
         }
 
         .container {
             max-width: 480px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
+            margin: 0 auto; padding: 20px;
+            position: relative; z-index: 1;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 24px;
-            padding-top: 10px;
+            margin-bottom: 24px; padding-top: 10px;
         }
 
         .logo-circle {
@@ -83,77 +73,93 @@
             background: linear-gradient(135deg, #7c5cfc 0%, #a78bfa 50%, #c4b5fd 100%);
             border-radius: 24px;
             display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            align-items: center; justify-content: center;
             font-size: 40px;
             box-shadow: 0 16px 40px rgba(124, 92, 252, 0.35);
             margin-bottom: 12px;
         }
 
         .header h1 {
-            font-size: 28px;
-            font-weight: 800;
+            font-size: 28px; font-weight: 800;
             background: linear-gradient(135deg, #5b21b6, #7c3aed, #6366f1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .header .subtitle {
-            color: #6b7280;
-            font-size: 14px;
-            margin-top: 4px;
-        }
+        .header .subtitle { color: #6b7280; font-size: 14px; margin-top: 4px; }
 
-        /* Подписка на уведомления */
         .subscribe-card {
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
-            padding: 20px;
+            padding: 24px;
             margin-bottom: 16px;
             box-shadow: var(--glass-shadow);
             text-align: center;
+            transition: all 0.3s;
         }
 
-        .subscribe-card.subscribed {
-            border-color: rgba(16, 185, 129, 0.4);
-            background: rgba(240, 253, 244, 0.8);
+        .subscribe-card.active {
+            border-color: rgba(16, 185, 129, 0.5);
+            background: rgba(240, 253, 244, 0.7);
         }
 
         .telegram-btn {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
+            gap: 10px;
+            padding: 14px 28px;
             background: #0088cc;
             color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 15px;
+            border-radius: 14px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             font-family: 'Inter', sans-serif;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
+            box-shadow: 0 6px 20px rgba(0, 136, 204, 0.3);
         }
 
         .telegram-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 136, 204, 0.4);
+            box-shadow: 0 8px 25px rgba(0, 136, 204, 0.4);
+        }
+
+        .telegram-btn.connected {
+            background: #10b981;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+            pointer-events: none;
         }
 
         .subscribe-status {
-            margin-top: 10px;
+            margin-top: 12px;
             font-size: 13px;
             font-weight: 600;
         }
 
         .status-active { color: #059669; }
+        .status-waiting { color: #f59e0b; }
         .status-inactive { color: #9ca3af; }
+
+        .spinner {
+            display: inline-block;
+            width: 16px; height: 16px;
+            border: 2px solid #f59e0b;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 4px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
 
         .glass-card {
             background: var(--glass-bg);
@@ -167,24 +173,18 @@
         }
 
         .card-title {
-            font-size: 17px;
-            font-weight: 700;
+            font-size: 17px; font-weight: 700;
             margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            display: flex; align-items: center; gap: 10px;
         }
 
         .input-group { margin-bottom: 16px; }
 
         .input-label {
             display: block;
-            font-size: 12px;
-            font-weight: 700;
-            color: #6b7280;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 12px; font-weight: 700;
+            color: #6b7280; margin-bottom: 6px;
+            text-transform: uppercase; letter-spacing: 1px;
         }
 
         select, input[type="date"] {
@@ -230,8 +230,7 @@
             color: white;
             border: none;
             border-radius: 14px;
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 16px; font-weight: 700;
             cursor: pointer;
             font-family: 'Inter', sans-serif;
             box-shadow: 0 8px 25px rgba(124, 92, 252, 0.35);
@@ -243,9 +242,7 @@
             box-shadow: 0 12px 30px rgba(124, 92, 252, 0.45);
         }
 
-        .btn-primary:active {
-            transform: translateY(0);
-        }
+        .btn-primary:active { transform: translateY(0); }
 
         .lens-card {
             background: var(--glass-bg);
@@ -287,30 +284,21 @@
         }
 
         .lens-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 10px;
         }
 
         .lens-type-name {
-            font-size: 17px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 17px; font-weight: 700;
+            display: flex; align-items: center; gap: 8px;
         }
 
         .lens-emoji { font-size: 28px; }
 
         .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 6px 14px; border-radius: 20px;
+            font-size: 12px; font-weight: 700;
         }
 
         .badge-ok { background: #d1fae5; color: #065f46; }
@@ -320,18 +308,13 @@
         .lens-dates { margin-bottom: 12px; }
 
         .date-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            color: #4b5563;
-            margin-bottom: 4px;
+            display: flex; align-items: center; gap: 10px;
+            font-size: 14px; color: #4b5563; margin-bottom: 4px;
         }
 
         .date-dot {
             width: 8px; height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
+            border-radius: 50%; flex-shrink: 0;
         }
 
         .dot-start { background: #a78bfa; }
@@ -342,8 +325,7 @@
         .progress-bar {
             height: 6px;
             background: rgba(0, 0, 0, 0.06);
-            border-radius: 10px;
-            overflow: hidden;
+            border-radius: 10px; overflow: hidden;
         }
 
         .progress-fill {
@@ -357,24 +339,18 @@
         .progress-expired { background: linear-gradient(90deg, #f87171, #ef4444); }
 
         .progress-label {
-            font-size: 11px;
-            color: #9ca3af;
-            text-align: right;
-            margin-top: 4px;
+            font-size: 11px; color: #9ca3af;
+            text-align: right; margin-top: 4px;
         }
 
         .btn-delete {
             background: rgba(0, 0, 0, 0.03);
             border: 1px solid rgba(0, 0, 0, 0.06);
             color: #6b7280;
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            width: 100%;
-            transition: all 0.2s;
+            padding: 8px 16px; border-radius: 10px;
+            font-size: 13px; font-weight: 500;
+            cursor: pointer; font-family: 'Inter', sans-serif;
+            width: 100%; transition: all 0.2s;
         }
 
         .btn-delete:hover {
@@ -384,8 +360,7 @@
         }
 
         .empty-state {
-            text-align: center;
-            padding: 40px 30px;
+            text-align: center; padding: 40px 30px;
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -394,8 +369,7 @@
         }
 
         .empty-icon {
-            font-size: 70px;
-            margin-bottom: 16px;
+            font-size: 70px; margin-bottom: 16px;
             animation: floatIcon 4s ease-in-out infinite;
         }
 
@@ -404,49 +378,18 @@
             50% { transform: translateY(-15px); }
         }
 
-        .empty-text {
-            font-size: 18px;
-            font-weight: 700;
-            color: #374151;
-            margin-bottom: 6px;
-        }
-
+        .empty-text { font-size: 18px; font-weight: 700; color: #374151; margin-bottom: 6px; }
         .empty-sub { font-size: 14px; color: #9ca3af; }
 
         .section-label {
-            font-size: 13px;
-            font-weight: 700;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-            padding-left: 4px;
+            font-size: 13px; font-weight: 700; color: #6b7280;
+            text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 12px; padding-left: 4px;
         }
 
         .footer {
-            text-align: center;
-            padding: 16px;
-            font-size: 12px;
-            color: #9ca3af;
-        }
-
-        .input-chat {
-            display: none;
-            margin-top: 10px;
-        }
-
-        .input-chat.show {
-            display: block;
-        }
-
-        .input-chat input {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid rgba(0,0,0,0.06);
-            border-radius: 10px;
-            font-size: 14px;
-            font-family: 'Inter', sans-serif;
-            text-align: center;
+            text-align: center; padding: 16px;
+            font-size: 12px; color: #9ca3af;
         }
     </style>
 </head>
@@ -464,29 +407,28 @@
             <p class="subtitle">Заботься о зрении красиво</p>
         </div>
 
-        <!-- Блок подписки на Telegram -->
-        <div class="subscribe-card" id="subscribeBlock">
-            <p style="font-weight:600; margin-bottom:12px;">🔔 Уведомления в Telegram</p>
-            <a class="telegram-btn" href="https://t.me/ZakharAntonovich_bot" target="_blank" id="telegramLink">
+        <!-- Подписка на Telegram -->
+        <div class="subscribe-card" id="subscribeCard">
+            <p style="font-weight:700; font-size:16px; margin-bottom:12px;">🔔 Уведомления в Telegram</p>
+            
+            <a class="telegram-btn" id="telegramBtn" 
+               href="https://t.me/ZakharAntonovich_bot?start=subscribe" 
+               target="_blank">
                 🤖 Подписаться на бота
             </a>
-            <p style="font-size:12px; color:#6b7280; margin-top:8px;">
+            
+            <p style="font-size:12px; color:#6b7280; margin-top:10px;">
                 1. Нажми кнопку → откроется бот<br>
                 2. Нажми <b>START</b> в боте<br>
-                3. Скопируй свой код и вставь ниже
+                3. Возвращайся сюда — всё подключится само!
             </p>
-            <div class="input-chat" id="chatInputBlock">
-                <input type="text" id="chatIdInput" placeholder="Вставь сюда свой chat_id">
-                <button class="btn-primary" onclick="saveChatId()" style="margin-top:8px; font-size:14px; padding:12px;">
-                    💾 Сохранить
-                </button>
-            </div>
-            <div class="subscribe-status status-inactive" id="subscribeStatus">
-                ⚪ Не подключено
+            
+            <div class="subscribe-status" id="subscribeStatus">
+                <span class="status-inactive">⚪ Не подключено</span>
             </div>
         </div>
 
-        <!-- Форма добавления -->
+        <!-- Форма -->
         <div class="glass-card">
             <div class="card-title">➕ Новые линзы</div>
             <div class="input-group">
@@ -507,56 +449,100 @@
 
         <div class="section-label">📋 Мои линзы</div>
         <div id="lensesList"></div>
-        <div class="footer">LensCare — уведомления в Telegram</div>
+        <div class="footer">Уведомления приходят в Telegram автоматически</div>
     </div>
 
     <script>
-        // Токен ОБЩЕГО бота
         const BOT_TOKEN = '8613787067:AAE1O_Md-6DxyVPp4DR7o-JrnrJiU9EigJY';
+        const BOT_USERNAME = 'ZakharAntonovich_bot';
         
         let lenses = JSON.parse(localStorage.getItem('lenses')) || [];
-        let userChatId = localStorage.getItem('telegram_chat_id') || '';
+        let userChatId = localStorage.getItem('tg_chat_id') || '';
+        let isChecking = false;
         
         document.getElementById('startDate').value = new Date().toISOString().split('T')[0];
         
-        // Показываем статус подписки
+        // Уникальный ID пользователя (генерируется один раз)
+        if (!localStorage.getItem('user_uid')) {
+            localStorage.setItem('user_uid', 'usr_' + Math.random().toString(36).substr(2, 9));
+        }
+        const USER_UID = localStorage.getItem('user_uid');
+        
+        // Обновляем ссылку бота — добавляем уникальный код пользователя
+        const telegramBtn = document.getElementById('telegramBtn');
+        telegramBtn.href = `https://t.me/${BOT_USERNAME}?start=${USER_UID}`;
+        
         function updateSubscribeUI() {
-            const block = document.getElementById('subscribeBlock');
+            const card = document.getElementById('subscribeCard');
             const status = document.getElementById('subscribeStatus');
-            const chatInput = document.getElementById('chatInputBlock');
+            const btn = document.getElementById('telegramBtn');
             
             if (userChatId) {
-                block.classList.add('subscribed');
-                status.textContent = '🟢 Подключено! Уведомления будут приходить';
-                status.className = 'subscribe-status status-active';
-                chatInput.classList.remove('show');
+                card.classList.add('active');
+                status.innerHTML = '<span class="status-active">🟢 Подключено! Уведомления приходят</span>';
+                btn.classList.add('connected');
+                btn.textContent = '✅ Подключено';
+            } else if (isChecking) {
+                status.innerHTML = '<span class="status-waiting"><span class="spinner"></span> Ожидание... Нажми START в боте</span>';
             } else {
-                block.classList.remove('subscribed');
-                status.textContent = '⚪ Не подключено — нажми кнопку выше';
-                status.className = 'subscribe-status status-inactive';
-                chatInput.classList.add('show');
+                card.classList.remove('active');
+                status.innerHTML = '<span class="status-inactive">⚪ Не подключено</span>';
+                btn.classList.remove('connected');
+                btn.textContent = '🤖 Подписаться на бота';
             }
         }
         
-        // Показываем поле ввода chat_id
-        document.getElementById('telegramLink').addEventListener('click', function(e) {
-            document.getElementById('chatInputBlock').classList.add('show');
-        });
-        
-        // Сохраняем chat_id
-        function saveChatId() {
-            const input = document.getElementById('chatIdInput').value.trim();
-            if (input) {
-                userChatId = input;
-                localStorage.setItem('telegram_chat_id', userChatId);
-                updateSubscribeUI();
-                // Отправляем тестовое сообщение
-                sendTelegramMessage(userChatId, '✅ <b>Подписка активирована!</b>\n\nТеперь ты будешь получать напоминания о замене линз.\n\n———\n<i>LensCare</i>');
-                alert('✅ Готово! Проверь Telegram — должно прийти подтверждение.');
+        // Проверяем, не подключился ли пользователь
+        async function checkSubscription() {
+            if (userChatId) return;
+            
+            isChecking = true;
+            updateSubscribeUI();
+            
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=-10`);
+                const data = await response.json();
+                
+                if (data.ok && data.result) {
+                    for (let update of data.result) {
+                        if (update.message && update.message.text) {
+                            const text = update.message.text;
+                            // Ищем наш уникальный код в сообщении
+                            if (text.includes(USER_UID)) {
+                                userChatId = update.message.chat.id.toString();
+                                localStorage.setItem('tg_chat_id', userChatId);
+                                
+                                // Отправляем подтверждение
+                                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({
+                                        chat_id: userChatId,
+                                        text: '✅ <b>Подписка активирована!</b>\n\nТеперь ты будешь получать напоминания о замене линз за 1 и 3 дня.\n\nСайт: lens-calendar.vercel.app\n\n———\n<i>LensCare — забота о зрении</i>',
+                                        parse_mode: 'HTML'
+                                    })
+                                });
+                                
+                                isChecking = false;
+                                updateSubscribeUI();
+                                // Перепланируем уведомления
+                                lenses.forEach(l => scheduleNotifications(l));
+                                return;
+                            }
+                        }
+                    }
+                }
+            } catch(e) {
+                console.log('Ошибка проверки:', e);
+            }
+            
+            // Проверяем снова через 3 секунды
+            if (!userChatId) {
+                setTimeout(checkSubscription, 3000);
             }
         }
         
-        function sendTelegramMessage(chatId, text) {
+        function sendToTelegram(chatId, text) {
             fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -595,10 +581,11 @@
             renderLenses();
             
             const btn = document.querySelector('.btn-primary');
+            const orig = btn.textContent;
             btn.textContent = '✅ Добавлено!';
             btn.style.background = 'linear-gradient(135deg, #10b981, #34d399)';
             setTimeout(() => {
-                btn.textContent = '✨ Добавить линзы';
+                btn.textContent = orig;
                 btn.style.background = '';
             }, 1500);
         }
@@ -631,7 +618,7 @@
                 if (delay > 0 && delay < 90 * 24 * 60 * 60 * 1000) {
                     setTimeout(() => {
                         const msg = `👁 <b>Пора менять линзы!</b>\n\n${lens.emoji} <b>${lens.typeName}</b>\n📅 Замена: <b>${formatRu(lens.endDate)}</b>\n⏰ Осталось: <b>${daysBefore} дн.</b>\n\n———\n<i>LensCare</i>`;
-                        sendTelegramMessage(userChatId, msg);
+                        sendToTelegram(userChatId, msg);
                     }, delay);
                 }
             });
@@ -697,10 +684,15 @@
             return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
         }
         
-        // Инициализация
+        // Запуск
         updateSubscribeUI();
         lenses.forEach(l => scheduleNotifications(l));
         renderLenses();
+        
+        // Начинаем проверку подписки
+        if (!userChatId) {
+            checkSubscription();
+        }
     </script>
 </body>
 </html>
