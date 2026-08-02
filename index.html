@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LensCare — Календарь линз</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #7c5cfc;
+            --primary-dark: #6246ea;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            min-height: 100vh;
+            color: #1e293b;
+            -webkit-font-smoothing: antialiased;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Фоновые волны */
+        .bg-waves {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: linear-gradient(180deg, #e8e0ff 0%, #f0e6ff 20%, #e0f0ff 50%, #e8ffe8 80%, #fff8e0 100%);
+        }
+
+        /* Плавающие круги */
+        .bg-circle {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            z-index: -1;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-circle-1 {
+            width: 400px;
+            height: 400px;
+            background: #c4b5fd;
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .bg-circle-2 {
+            width: 350px;
+            height: 350px;
+            background: #a5d8ff;
+            bottom: -80px;
+            left: -80px;
+            animation-delay: -7s;
+        }
+
+        .bg-circle-3 {
+            width: 250px;
+            height: 250px;
+            background: #a7f0ba;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -14s;
+        }
+
+        .bg-circle-4 {
+            width: 200px;
+            height: 200px;
+            background: #fde68a;
+            top: 20%;
+            right: 20%;
+            animation-delay: -3s;
+        }
+
+        /* Сетка точек */
+        .bg-dots {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+            background-image: radial-gradient(circle, #7c5cfc 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(30px, -30px) scale(1.05);
+            }
+            50% {
+                transform: translate(-20px, 20px) scale(0.95);
+            }
+            75% {
+                transform: translate(-30px, -20px) scale(1.02);
+            }
+        }
+
+        /* Контейнер */
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Шапка с иконкой */
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-top: 10px;
+        }
+
+        .logo-wrapper {
+            display: inline-block;
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .logo-circle {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #7c5cfc 0%, #a78bfa 50%, #c4b5fd 100%);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 16px 40px rgba(124, 92, 252, 0.35);
+            position: relative;
+            animation: logoPulse 4s ease-in-out infinite;
+        }
+
+        .logo-ring {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 28px;
+            border: 2px dashed rgba(124, 92, 252, 0.3);
+            animation: ringRotate 20s linear infinite;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { box-shadow: 0 16px 40px rgba(124, 92, 252, 0.35); }
+            50% { box-shadow: 0 20px 50px rgba(124, 92, 252, 0.5); }
+        }
+
+        @keyframes ringRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #5b21b6, #7c3aed, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .header .subtitle {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* Стеклянная карточка */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: var(--glass-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .card-icon.add {
+            background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+        }
+
+        /* Поля ввода */
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #6b7280;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        select, input[type="date"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid rgba(0, 0, 0, 0.06);
+            border-radius: 14px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
+            background: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s;
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%237c5cfc' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 44px;
+        }
+
+        input[type="date"] {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%237c5cfc' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 44px;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #7c5cfc;
+            box-shadow: 0 0 0 4px rgba(124, 92, 252, 0.08);
+            background: #fff;
+        }
+
+        /* Кнопка с градиентом */
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #7c5cfc 0%, #a78bfa 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 25px rgba(124, 92, 252, 0.35);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::after {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(124, 92, 252, 0.45);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 15px rgba(124, 92, 252, 0.3);
+        }
+
+        /* Карточка линзы */
+        .lens-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            box-shadow: var(--glass-shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: cardIn 0.5s ease;
+        }
+
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .lens-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.04;
+            pointer-events: none;
+        }
+
+        .lens-card.ok::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%2310b981'/%3E%3C/svg%3E");
+        }
+
+        .lens-card.warning {
+            background: rgba(255, 251, 235, 0.8);
+            border-color: rgba(245, 158, 11, 0.3);
+            animation: warningGlow 2s ease-in-out infinite;
+        }
+
+        .lens-card.expired {
+            background: rgba(254, 242, 242, 0.8);
+            border-color: rgba(239, 68, 68, 0.3);
+            animation: expiredGlow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes warningGlow {
+            0%, 100% { box-shadow: 0 8px 32px rgba(245, 158, 11, 0.1); }
+            50% { box-shadow: 0 8px 40px rgba(245, 158, 11, 0.25); }
+        }
+
+        @keyframes expiredGlow {
+            0%, 100% { box-shadow: 0 8px 32px rgba(239, 68, 68, 0.1); }
+            50% { box-shadow: 0 8px 40px rgba(239, 68, 68, 0.25); }
+        }
+
+        .lens-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .lens-type-name {
+            font-size: 17px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .lens-emoji {
+            font-size: 28px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-ok {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+            animation: badgePulse 1.5s ease-in-out infinite;
+        }
+
+        .badge-expired {
+            background: #fee2e2;
+            color: #991b1b;
+            animation: badgePulse 1s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .lens-dates {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .date-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #4b5563;
+        }
+
+        .date-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .dot-start { background: #a78bfa; }
+        .dot-end { background: #f59e0b; }
+
+        /* Прогресс бар */
+        .progress-wrap {
+            margin-bottom: 12px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.8s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 8px;
+            height: 100%;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        .progress-ok { background: linear-gradient(90deg, #34d399, #10b981); }
+        .progress-warning { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+        .progress-expired { background: linear-gradient(90deg, #f87171, #ef4444); }
+
+        .progress-label {
+            font-size: 11px;
+            color: #9ca3af;
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .btn-delete {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #6b7280;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+        }
+
+        .btn-delete:hover {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #dc2626;
+        }
+
+        /* Пустое состояние */
+        .empty-state {
+            text-align: center;
+            padding: 40px 30px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+        }
+
+        .empty-icon {
+            font-size: 70px;
+            margin-bottom: 16px;
+            animation: floatIcon 4s ease-in-out infinite;
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .empty-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .empty-sub {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        .section-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 16px;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .footer-dot {
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #7c5cfc;
+            margin: 0 6px;
+            animation: dotBlink 1.5s ease-in-out infinite;
+        }
+
+        @keyframes dotBlink {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Фоновые элементы -->
+    <div class="bg-waves"></div>
+    <div class="bg-dots"></div>
+    <div class="bg-circle bg-circle-1"></div>
+    <div class="bg-circle bg-circle-2"></div>
+    <div class="bg-circle bg-circle-3"></div>
+    <div class="bg-circle bg-circle-4"></div>
+
+    <div class="container">
+        <!-- Шапка -->
+        <div class="header">
+            <div class="logo-wrapper">
+                <div class="logo-ring"></div>
+                <div class="logo-circle">👁️</div>
+            </div>
+            <h1>LensCare</h1>
+            <p class="subtitle">Заботься о зрении красиво</p>
+        </div>
+
+        <!-- Форма -->
+        <div class="glass-card">
+            <div class="card-title">
+                <div class="card-icon add">➕</div>
+                Новые линзы
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">Тип линз</label>
+                <select id="lensType">
+                    <option value="daily">👆 Однодневные</option>
+                    <option value="biweekly">📅 Двухнедельные</option>
+                    <option value="monthly">🗓 Месячные</option>
+                    <option value="quarterly">📆 Квартальные (90 дней)</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">Дата начала</label>
+                <input type="date" id="startDate">
+            </div>
+            
+            <button class="btn-primary" onclick="addLens()">
+                ✨ Добавить линзы
+            </button>
+        </div>
+
+        <!-- Список -->
+        <div class="section-label">📋 Мои линзы</div>
+        <div id="lensesList"></div>
+
+        <div class="footer">
+            <span class="footer-dot"></span>
+            Напоминания придут в Telegram
+            <span class="footer-dot" style="animation-delay: 0.5s;"></span>
+        </div>
+    </div>
+
+    <script>
+        const BOT_TOKEN = '8613787067:AAE1O_Md-6DxyVPp4DR7o-JrnrJiU9EigJY';
+        const CHAT_ID = '1796046052';
+        
+        let lenses = JSON.parse(localStorage.getItem('lenses')) || [];
+        document.getElementById('startDate').value = new Date().toISOString().split('T')[0];
+        
+        const lensConfig = {
+            daily:     { name: 'Однодневные',  emoji: '👆', days: 1 },
+            biweekly:  { name: 'Двухнедельные', emoji: '📅', days: 14 },
+            monthly:   { name: 'Месячные',      emoji: '🗓', days: 30 },
+            quarterly: { name: 'Квартальные',   emoji: '📆', days: 90 }
+        };
+        
+        function addLens() {
+            const type = document.getElementById('lensType').value;
+            const startDate = document.getElementById('startDate').value;
+            
+            if (!startDate) return;
+            
+            const config = lensConfig[type];
+            const endDate = new Date(startDate);
+            endDate.setDate(endDate.getDate() + config.days);
+            
+            const lens = {
+                id: Date.now(),
+                type, startDate,
+                endDate: endDate.toISOString().split('T')[0],
+                typeName: config.name,
+                emoji: config.emoji,
+                totalDays: config.days
+            };
+            
+            lenses.push(lens);
+            saveLenses();
+            scheduleNotifications(lens);
+            renderLenses();
+            
+            const btn = document.querySelector('.btn-primary');
+            const orig = btn.textContent;
+            btn.textContent = '✅ Добавлено!';
+            btn.style.background = 'linear-gradient(135deg, #10b981, #34d399)';
+            setTimeout(() => {
+                btn.textContent = orig;
+                btn.style.background = '';
+            }, 1500);
+        }
+        
+        function deleteLens(id) {
+            if (confirm('Удалить линзы?')) {
+                lenses = lenses.filter(l => l.id !== id);
+                saveLenses();
+                renderLenses();
+            }
+        }
+        
+        function saveLenses() {
+            localStorage.setItem('lenses', JSON.stringify(lenses));
+        }
+        
+        function scheduleNotifications(lens) {
+            const endDate = new Date(lens.endDate);
+            const now = new Date();
+            
+            [1, 3].forEach(daysBefore => {
+                const notifyDate = new Date(endDate);
+                notifyDate.setDate(notifyDate.getDate() - daysBefore);
+                notifyDate.setHours(9, 0, 0, 0);
+                
+                const delay = notifyDate - now;
+                
+                if (delay > 0 && delay < 90 * 24 * 60 * 60 * 1000) {
+                    setTimeout(async () => {
+                        const msg = `👁 <b>Пора менять линзы!</b>\n\n${lens.emoji} <b>${lens.typeName}</b>\n📅 Замена: <b>${formatRu(lens.endDate)}</b>\n⏰ Осталось: <b>${daysBefore} дн.</b>\n\n———\n<i>LensCare</i>`;
+                        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ chat_id: CHAT_ID, text: msg, parse_mode: 'HTML' })
+                        });
+                    }, delay);
+                }
+            });
+        }
+        
+        function getStatus(lens) {
+            const today = new Date(); today.setHours(0,0,0,0);
+            const start = new Date(lens.startDate); start.setHours(0,0,0,0);
+            const end = new Date(lens.endDate); end.setHours(0,0,0,0);
+            
+            const daysLeft = Math.ceil((end - today) / 86400000);
+            const daysUsed = Math.max(0, Math.ceil((today - start) / 86400000));
+            const progress = Math.min(100, Math.round((daysUsed / lens.totalDays) * 100));
+            
+            if (daysLeft < 0) return { status: 'expired', badgeClass: 'badge-expired', badgeText: '⚠️ Просрочены', progressClass: 'progress-expired', daysLeft };
+            if (daysLeft <= 3) return { status: 'warning', badgeClass: 'badge-warning', badgeText: `⚡ ${daysLeft} дн.`, progressClass: 'progress-warning', daysLeft };
+            return { status: 'ok', badgeClass: 'badge-ok', badgeText: `✅ ${daysLeft} дн.`, progressClass: 'progress-ok', daysLeft, progress };
+        }
+        
+        function renderLenses() {
+            const container = document.getElementById('lensesList');
+            
+            if (lenses.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">👓</div>
+                        <div class="empty-text">Нет активных линз</div>
+                        <div class="empty-sub">Добавь первую пару выше ✨</div>
+                    </div>`;
+                return;
+            }
+            
+            const sorted = [...lenses].sort((a, b) => new Date(a.endDate) - new Date(b.endDate));
+            
+            container.innerHTML = sorted.map(lens => {
+                const s = getStatus(lens);
+                return `
+                <div class="lens-card ${s.status}">
+                    <div class="lens-header">
+                        <span class="lens-type-name">
+                            <span class="lens-emoji">${lens.emoji}</span> ${lens.typeName}
+                        </span>
+                        <span class="badge ${s.badgeClass}">${s.badgeText}</span>
+                    </div>
+                    <div class="lens-dates">
+                        <div class="date-row">
+                            <div class="date-dot dot-start"></div> Начало: ${formatRu(lens.startDate)}
+                        </div>
+                        <div class="date-row">
+                            <div class="date-dot dot-end"></div> Замена: ${formatRu(lens.endDate)}
+                        </div>
+                    </div>
+                    <div class="progress-wrap">
+                        <div class="progress-bar">
+                            <div class="progress-fill ${s.progressClass}" style="width:${s.progress || 100}%"></div>
+                        </div>
+                        <div class="progress-label">${s.progress || 100}% использовано</div>
+                    </div>
+                    <button class="btn-delete" onclick="deleteLens(${lens.id})">🗑 Удалить</button>
+                </div>`;
+            }).join('');
+        }
+        
+        function formatRu(dateStr) {
+            const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+            const d = new Date(dateStr);
+            return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        }
+        
+        lenses.forEach(l => scheduleNotifications(l));
+        renderLenses();
+    </script>
+</body>
+</html>
