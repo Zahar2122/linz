@@ -136,6 +136,7 @@
         .telegram-btn.connected {
             background: #10b981;
             box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+            pointer-events: none;
         }
 
         .telegram-btn.reconnect {
@@ -412,17 +413,6 @@
             text-align: center; padding: 16px;
             font-size: 12px; color: #9ca3af;
         }
-
-        .checking-dot {
-            display: inline-block; width: 6px; height: 6px;
-            border-radius: 50%; background: #f59e0b;
-            animation: dotPulse 1s ease-in-out infinite;
-        }
-
-        @keyframes dotPulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
     </style>
 </head>
 <body>
@@ -485,7 +475,7 @@
 
         <div class="section-label">📋 Мои линзы</div>
         <div id="lensesList"></div>
-        <div class="footer">Уведомления приходят в Telegram автоматически</div>
+        <div class="footer">Уведомления приходят в Telegram</div>
     </div>
 
     <script>
@@ -497,7 +487,7 @@
         let lenses = JSON.parse(localStorage.getItem('lenses')) || [];
         let userChatId = localStorage.getItem('tg_chat_id') || '';
         let isChecking = false;
-        let checkInterval = null;
+        let checkTimeout = null;
         
         document.getElementById('startDate').value = new Date().toISOString().split('T')[0];
         
@@ -507,14 +497,13 @@
         }
         const USER_UID = localStorage.getItem('user_uid');
         
-        // Обновляем ссылку бота с уникальным кодом
         function updateBotLink() {
             const telegramBtn = document.getElementById('telegramBtn');
             telegramBtn.href = `https://t.me/${BOT_USERNAME}?start=${USER_UID}`;
         }
         updateBotLink();
         
-        // ============ ОТПРАВКА В TELEGRAM ============
+        // ============ ОТПРАВКА В TELEGRAM (без лишних проверок) ============
         async function sendToTelegram(chatId, text) {
             try {
                 const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -528,25 +517,18 @@
                 });
                 const data = await response.json();
                 
-                // Проверяем, не заблокировал ли пользователь бота
+                // Если бот заблокирован — сбрасываем
                 if (!data.ok && data.error_code === 403) {
-                    console.log('Бот заблокирован пользователем');
-                    handleBotBlocked();
+                    userChatId = '';
+                    localStorage.removeItem('tg_chat_id');
+                    updateSubscribeUI('blocked');
+                    stopChecking();
                     return false;
                 }
                 return data.ok;
             } catch(e) {
-                console.log('Ошибка отправки:', e);
                 return false;
             }
-        }
-        
-        // ============ ПРОВЕРКА БЛОКИРОВКИ ============
-        function handleBotBlocked() {
-            userChatId = '';
-            localStorage.removeItem('tg_chat_id');
-            updateSubscribeUI('blocked');
-            stopChecking();
         }
         
         // ============ ИНТЕРФЕЙС ПОДПИСКИ ============
@@ -557,7 +539,6 @@
             const testBtn = document.getElementById('testNotifyBtn');
             const hint = document.getElementById('subscribeHint');
             
-            // Убираем все классы
             card.classList.remove('active', 'blocked');
             btn.classList.remove('connected', 'reconnect');
             
@@ -566,7 +547,6 @@
                 status.innerHTML = '<span class="status-active">🟢 Подключено! Уведомления приходят</span>';
                 btn.classList.add('connected');
                 btn.textContent = '✅ Подключено';
-                btn.style.pointerEvents = 'none';
                 testBtn.style.display = 'block';
                 hint.innerHTML = 'Всё работает! Проверь уведомления кнопкой ниже 👇';
             } else if (state === 'blocked') {
@@ -574,18 +554,15 @@
                 status.innerHTML = '<span class="status-blocked">🔴 Бот заблокирован. Нажми кнопку чтобы переподключить</span>';
                 btn.classList.add('reconnect');
                 btn.textContent = '🔄 Переподключить бота';
-                btn.style.pointerEvents = 'auto';
                 testBtn.style.display = 'none';
                 hint.innerHTML = 'Нажми кнопку, затем <b>START</b> в боте чтобы снова подключиться';
             } else if (state === 'waiting') {
                 status.innerHTML = '<span class="status-waiting"><span class="spinner"></span> Ожидание... Нажми START в боте</span>';
                 btn.textContent = '🤖 Подписаться на бота';
-                btn.style.pointerEvents = 'auto';
                 testBtn.style.display = 'none';
             } else {
                 status.innerHTML = '<span class="status-inactive">⚪ Не подключено</span>';
                 btn.textContent = '🤖 Подписаться на бота';
-                btn.style.pointerEvents = 'auto';
                 testBtn.style.display = 'none';
                 hint.innerHTML = '1. Нажми кнопку → откроется бот<br>2. Нажми <b>START</b> в боте<br>3. Возвращайся сюда — подключится само!';
             }
@@ -593,15 +570,10 @@
             updateBotLink();
         }
         
-        // ============ ПРОВЕРКА ПОДПИСКИ ============
+        // ============ ПРОВЕРКА ПОДПИСКИ (только при первом подключении) ============
         async function checkSubscription() {
             if (userChatId) {
-                // Проверяем что чат всё ещё активен
-                const ok = await sendToTelegram(userChatId, '✅ <b>LensCare активен!</b>\n\nУведомления работают.\n\n———\n<i>Проверка связи</i>');
-                if (ok) {
-                    updateSubscribeUI('connected');
-                }
-                // Если не ok — handleBotBlocked уже сработал
+                updateSubscribeUI('connected');
                 return;
             }
             
@@ -618,45 +590,39 @@
                             const text = update.message.text;
                             const chatId = update.message.chat.id.toString();
                             
-                            // Ищем наш уникальный код ИЛИ команду /start с кодом
                             if (text.includes(USER_UID) || text.includes('/start')) {
                                 userChatId = chatId;
                                 localStorage.setItem('tg_chat_id', userChatId);
                                 
-                                // Отправляем подтверждение
+                                // ОДНО подтверждение при подключении
                                 await sendToTelegram(userChatId, 
                                     '✅ <b>Подписка активирована!</b>\n\n' +
                                     'Теперь ты будешь получать напоминания:\n' +
-                                    '📅 За 3 дня до замены\n' +
-                                    '⏰ За 1 день до замены\n\n' +
-                                    'Сайт: lens-calendar.vercel.app\n\n' +
+                                    '📅 За 1 день до замены\n' +
+                                    '☀️ В день замены (утром)\n\n' +
                                     '———\n<i>LensCare — забота о зрении</i>'
                                 );
                                 
                                 isChecking = false;
                                 updateSubscribeUI('connected');
-                                // Перепланируем уведомления для всех линз
                                 lenses.forEach(l => scheduleNotifications(l));
                                 return;
                             }
                         }
                     }
                 }
-            } catch(e) {
-                console.log('Ошибка проверки:', e);
-            }
+            } catch(e) {}
             
-            // Продолжаем проверку
             if (!userChatId && isChecking) {
-                setTimeout(checkSubscription, 3000);
+                checkTimeout = setTimeout(checkSubscription, 3000);
             }
         }
         
         function stopChecking() {
             isChecking = false;
-            if (checkInterval) {
-                clearTimeout(checkInterval);
-                checkInterval = null;
+            if (checkTimeout) {
+                clearTimeout(checkTimeout);
+                checkTimeout = null;
             }
         }
         
@@ -671,10 +637,7 @@
             testBtn.textContent = '⏳ Отправляю...';
             testBtn.disabled = true;
             
-            const msg = '🧪 <b>Тестовое уведомление!</b>\n\n' +
-                       '✅ Всё работает отлично!\n' +
-                       '📅 Ты будешь получать напоминания о замене линз за 3 и 1 день.\n\n' +
-                       '———\n<i>LensCare</i>';
+            const msg = '🧪 <b>Тестовое уведомление!</b>\n\n✅ Всё работает отлично!\n\n———\n<i>LensCare</i>';
             
             const ok = await sendToTelegram(userChatId, msg);
             
@@ -730,15 +693,13 @@
             renderLenses();
             
             const btn = document.querySelector('.btn-primary');
-            const orig = btn.textContent;
             btn.textContent = '✅ Добавлено!';
             btn.style.background = 'linear-gradient(135deg, #10b981, #34d399)';
             setTimeout(() => {
-                btn.textContent = orig;
+                btn.textContent = '✨ Добавить линзы';
                 btn.style.background = '';
             }, 1500);
             
-            // Если нет chat_id — напоминаем
             if (!userChatId) {
                 setTimeout(() => {
                     alert('⚠️ Подключи Telegram бота чтобы получать уведомления о замене!');
@@ -764,54 +725,55 @@
             const endDate = new Date(lens.endDate);
             const now = new Date();
             
-            const notifyDays = [1, 3]; // За 1 и 3 дня
+            // 1. Уведомление ЗА 1 ДЕНЬ до замены (в 10:00)
+            const dayBefore = new Date(endDate);
+            dayBefore.setDate(dayBefore.getDate() - 1);
+            dayBefore.setHours(10, 0, 0, 0);
             
-            notifyDays.forEach(daysBefore => {
-                const notifyDate = new Date(endDate);
-                notifyDate.setDate(notifyDate.getDate() - daysBefore);
-                notifyDate.setHours(10, 0, 0, 0); // В 10 утра
-                
-                const delay = notifyDate - now;
-                
-                // Проверяем что уведомление в будущем и не слишком далеко
-                if (delay > 1000 && delay < 95 * 24 * 60 * 60 * 1000) {
-                    console.log(`📅 Уведомление запланировано для "${lens.typeName}" через ${Math.round(delay / 1000 / 60 / 60)} часов (за ${daysBefore} дн. до замены)`);
-                    
+            const delayDayBefore = dayBefore - now;
+            
+            if (delayDayBefore > 1000 && delayDayBefore < 95 * 24 * 60 * 60 * 1000) {
+                if (!lens.notificationsSent.includes('day_before')) {
                     setTimeout(async () => {
-                        console.log(`🔔 ОТПРАВЛЯЮ уведомление для "${lens.typeName}"`);
-                        
-                        const msg = `👁 <b>Пора менять линзы!</b>\n\n` +
+                        const msg = `👁 <b>Напоминание!</b>\n\n` +
                                    `${lens.emoji} <b>${lens.typeName}</b>\n` +
-                                   `📅 Замена: <b>${formatRu(lens.endDate)}</b>\n` +
-                                   `⏰ Осталось: <b>${daysBefore} дн.</b>\n\n` +
-                                   `Не забудь подготовить новую пару!\n\n` +
-                                   `———\n<i>LensCare — забота о зрении</i>`;
+                                   `📅 Завтра нужно заменить линзы!\n` +
+                                   `🔄 Дата замены: <b>${formatRu(lens.endDate)}</b>\n\n` +
+                                   `Не забудь подготовить новую пару! 👁\n\n` +
+                                   `———\n<i>LensCare</i>`;
                         
                         const ok = await sendToTelegram(userChatId, msg);
-                        
                         if (ok) {
-                            // Сохраняем что уведомление отправлено
-                            lens.notificationsSent = lens.notificationsSent || [];
-                            lens.notificationsSent.push(daysBefore);
+                            lens.notificationsSent.push('day_before');
                             saveLenses();
-                            console.log(`✅ Уведомление отправлено!`);
-                        } else {
-                            console.log(`❌ Не удалось отправить уведомление`);
                         }
-                    }, delay);
-                } else if (delay <= 1000 && delay > -86400000) {
-                    // Уведомление нужно отправить прямо сейчас (если пропустили)
-                    console.log(`⚡ Срочное уведомление для "${lens.typeName}"`);
-                    
-                    const msg = `👁 <b>Пора менять линзы!</b>\n\n` +
-                               `${lens.emoji} <b>${lens.typeName}</b>\n` +
-                               `📅 Замена: <b>${formatRu(lens.endDate)}</b>\n` +
-                               `⏰ Осталось: <b>${daysBefore} дн.</b>\n\n` +
-                               `———\n<i>LensCare</i>`;
-                    
-                    sendToTelegram(userChatId, msg);
+                    }, delayDayBefore);
                 }
-            });
+            }
+            
+            // 2. Уведомление В ДЕНЬ ЗАМЕНЫ (в 8:00 утра)
+            const onDay = new Date(endDate);
+            onDay.setHours(8, 0, 0, 0);
+            
+            const delayOnDay = onDay - now;
+            
+            if (delayOnDay > 1000 && delayOnDay < 95 * 24 * 60 * 60 * 1000) {
+                if (!lens.notificationsSent.includes('on_day')) {
+                    setTimeout(async () => {
+                        const msg = `☀️ <b>Сегодня меняем линзы!</b>\n\n` +
+                                   `${lens.emoji} <b>${lens.typeName}</b>\n` +
+                                   `📅 Дата замены: <b>${formatRu(lens.endDate)}</b>\n\n` +
+                                   `Пора надеть новую пару! ✨\n\n` +
+                                   `———\n<i>LensCare</i>`;
+                        
+                        const ok = await sendToTelegram(userChatId, msg);
+                        if (ok) {
+                            lens.notificationsSent.push('on_day');
+                            saveLenses();
+                        }
+                    }, delayOnDay);
+                }
+            }
         }
         
         function getStatus(lens) {
@@ -824,7 +786,7 @@
             const progress = Math.min(100, Math.round((daysUsed / lens.totalDays) * 100));
             
             if (daysLeft < 0) return { status: 'expired', badgeClass: 'badge-expired', badgeText: '⚠️ Просрочены', progressClass: 'progress-expired', progress: 100 };
-            if (daysLeft <= 3) return { status: 'warning', badgeClass: 'badge-warning', badgeText: `⚡ ${daysLeft} дн.`, progressClass: 'progress-warning', progress };
+            if (daysLeft <= 1) return { status: 'warning', badgeClass: 'badge-warning', badgeText: `⚡ ${daysLeft} дн.`, progressClass: 'progress-warning', progress };
             return { status: 'ok', badgeClass: 'badge-ok', badgeText: `✅ ${daysLeft} дн.`, progressClass: 'progress-ok', progress };
         }
         
@@ -876,34 +838,19 @@
         
         // ============ ЗАПУСК ============
         function init() {
-            updateSubscribeUI(userChatId ? 'connected' : 'inactive');
-            lenses.forEach(l => scheduleNotifications(l));
-            renderLenses();
-            
-            // Если подключены — проверяем что бот не заблокирован
             if (userChatId) {
-                setTimeout(() => {
-                    sendToTelegram(userChatId, '✅ <b>LensCare активен!</b>\n\nУведомления работают.\n\n———\n<i>Проверка связи</i>');
-                }, 2000);
+                updateSubscribeUI('connected');
+                lenses.forEach(l => scheduleNotifications(l));
             } else {
-                // Запускаем проверку подписки
+                updateSubscribeUI('inactive');
                 setTimeout(checkSubscription, 1000);
             }
+            renderLenses();
         }
         
         init();
         
-        // Периодическая проверка (каждые 5 минут) что бот не заблокирован
-        setInterval(() => {
-            if (userChatId) {
-                sendToTelegram(userChatId, '✅ <b>LensCare активен!</b>\n\nУведомления работают.\n\n———\n<i>Проверка связи</i>');
-            }
-        }, 300000); // 5 минут
-        
-        console.log('👁️ LensCare запущен!');
-        console.log('🤖 Бот:', BOT_USERNAME);
-        console.log('👤 UID:', USER_UID);
-        console.log('💬 Chat ID:', userChatId || 'не подключен');
+        console.log('👁️ LensCare готов!');
     </script>
 </body>
 </html>
